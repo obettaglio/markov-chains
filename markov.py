@@ -16,7 +16,7 @@ def open_and_read_file(file_path):
     return text_string
 
 
-def make_chains(text_string):
+def make_chains(text_string, input_n):
     """Takes input text as string; returns _dictionary_ of markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -31,13 +31,13 @@ def make_chains(text_string):
 
     chains = {}
     words = text_string.split()
-    for i in range(len(words) - 1):
-        bigram = (words[i], words[i+1])
+    for i in range(len(words) - (input_n - 1)):
+        n_gram = tuple(words[i:i+input_n])
         try:
-            if bigram in chains:
-                chains[bigram].append(words[i+2])
+            if n_gram in chains:
+                chains[n_gram].append(words[i+input_n])
             else:
-                chains[bigram] = [words[i+2]]
+                chains[n_gram] = [words[i+input_n]]
 
             # ??? chains.setdefault(bigram, default=[words[i+2]])
         except:
@@ -52,13 +52,18 @@ def make_text(chains):
     text = ""
     text_list = []
 
-    rand_key = choice(chains.keys())
-    text_list.extend(rand_key)
+    rand_key_tuple = choice(chains.keys())
+    text_list.extend(rand_key_tuple)
 
-    while rand_key in chains:
-        rand_value = choice(chains[rand_key])
+    while rand_key_tuple in chains:
+        rand_value = choice(chains[rand_key_tuple])
         text_list.append(rand_value)
-        rand_key = (rand_key[1], rand_value)
+
+        # listify key, remove first value, add new value, retuplefy key
+        rand_key_list = list(rand_key_tuple)
+        del rand_key_list[0]
+        rand_key_list.append(rand_value)
+        rand_key_tuple = tuple(rand_key_list)
 
     text = " ".join(text_list)
 
@@ -66,12 +71,13 @@ def make_text(chains):
 
 
 input_path = sys.argv[1]
+input_n = int(sys.argv[2])
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, input_n)
 
 # Produce random text
 random_text = make_text(chains)
