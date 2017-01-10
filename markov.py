@@ -8,7 +8,6 @@ def open_and_read_file(file_path):
     the file's contents as one string of text.
     """
 
-    # your code goes here
     open_file = open(file_path).read()
 
     return open_file
@@ -28,8 +27,16 @@ def make_chains(text_string):
     """
 
     chains = {}
-
-    # your code goes here
+    words = text_string.split()
+    for i in range(len(words) - 1):
+        bigram = (words[i], words[i+1])
+        try:
+            if bigram in chains:
+                chains[bigram].append(words[i+2])
+            else:
+                chains[bigram] = [words[i+2]]
+        except:
+            pass
 
     return chains
 
@@ -51,6 +58,7 @@ input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
 chains = make_chains(input_text)
+print chains
 
 # Produce random text
 random_text = make_text(chains)
