@@ -88,6 +88,7 @@ def make_text(chains):
         if check_punctuation(rand_key_tuple) is False:
             if text:                            # If text already has characters
                 text_list = [""] + text_list    # Add extra space to start of text list
+    
             text_addition = " ".join(text_list)
 
             if len(text + text_addition) <= 140:
@@ -96,11 +97,14 @@ def make_text(chains):
             elif len(text + text_addition) > 140 and text == "":
                 for word in text_list:
 
-                    if len(text + word) <= 140:
+                    if len(text + word) <= 139:     # 139 to account for extra punctuation
                         text += word + " "
+
                     else:
+                        text = text[:-1] + '.'
                         break
             else:
+                # print text_addition
                 break
 
     # text = " ".join(text_list)
@@ -122,4 +126,4 @@ chains = make_chains(input_text, input_n)
 random_text = make_text(chains)
 
 print random_text
-print len(random_text)
+# print len(random_text)
