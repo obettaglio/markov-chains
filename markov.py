@@ -38,8 +38,6 @@ def make_chains(text_string, input_n):
                 chains[n_gram].append(words[i+input_n])
             else:
                 chains[n_gram] = [words[i+input_n]]
-
-            # ??? chains.setdefault(bigram, [words[i+2]])
         except:
             pass
 
@@ -61,8 +59,53 @@ def check_punctuation(rand_key_tuple):
         return True
 
 
+def make_text_tweetable(text, text_list):
+    """Makes tweetable text from current text string and new text list
+
+    Takes current text string and new text_list
+    Returns list of:
+        new text string, and
+        boolean of whether tweet is complete
+    """
+
+    TWEET_NOT_DONE = True
+
+    if text:                            # If text already has characters
+        text_list = [""] + text_list    # Add extra space to start of text list
+
+    text_addition = " ".join(text_list)
+
+    # Keep adding sentences until character limit reached
+    if len(text + text_addition) <= 140:
+        text += text_addition
+        text_list = []
+
+    # Else if first sentence longer than character limit
+    elif len(text + text_addition) > 140 and text == "":
+
+        #Keep adding words until character limit reached
+        for word in text_list:
+
+            if len(text + word) <= 139:     # 139 to account for extra punctuation
+                text += word + " "
+            else:
+                text = text[:-1] + '.'      # Remove final space and add punctuation
+                TWEET_NOT_DONE = False      # Set global variable to end sentence creation
+                # return [text, TWEET_NOT_DONE]
+                break
+
+    # Else tweet has sentence and reaches character limit
+    else:
+        TWEET_NOT_DONE = False              # Set global variable to end sentence creation
+
+    return [text, TWEET_NOT_DONE]
+
+
 def make_text(chains):
-    """Takes dictionary of markov chains; returns random text."""
+    """Takes dictionary of markov chains; returns random text of tweet length."""
+
+    # Set global variable for tweet completion
+    TWEET_NOT_DONE = True
 
     text = ""
     text_list = []
@@ -72,44 +115,29 @@ def make_text(chains):
     rand_key_tuple = choice(capital_keys)
     text_list.extend(rand_key_tuple)
 
-    # while rand_key_tuple in chains:           # stop at end of file (hopefully)
-    # while check_punctuation(rand_key_tuple):  # stop at punctuation
-    while len(text_list) < 70:               # stop at number of words
+    # while rand_key_tuple in chains:           # Stop at end of file (hopefully)
+    # while check_punctuation(rand_key_tuple):  # Stop at punctuation
+    # while len(text_list) < 70:                # Stop at number of words
+    while TWEET_NOT_DONE:                       # Stop at tweetable parameters
 
         rand_value = choice(chains[rand_key_tuple])
         text_list.append(rand_value)
 
-        # listify key, remove first value, add new value, retuplefy key
+        # Listify key, remove first value, add new value, retuplefy key
         rand_key_list = list(rand_key_tuple)
         del rand_key_list[0]
         rand_key_list.append(rand_value)
         rand_key_tuple = tuple(rand_key_list)
 
+        # If punctuation is found for end of sentence
         if check_punctuation(rand_key_tuple) is False:
-            if text:                            # If text already has characters
-                text_list = [""] + text_list    # Add extra space to start of text list
-    
-            text_addition = " ".join(text_list)
 
-            if len(text + text_addition) <= 140:
-                text += text_addition
-                text_list = []
-            elif len(text + text_addition) > 140 and text == "":
-                for word in text_list:
-
-                    if len(text + word) <= 139:     # 139 to account for extra punctuation
-                        text += word + " "
-
-                    else:
-                        text = text[:-1] + '.'
-                        break
-            else:
-                # print text_addition
-                break
+            # Make tweetable text and determine if tweet is finished, reset text list
+            text, TWEET_NOT_DONE = make_text_tweetable(text, text_list)
+            text_list = []
 
     # text = " ".join(text_list)
 
-    # return text[:140]     # return tweet length string
     return text
 
 
