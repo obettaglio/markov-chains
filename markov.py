@@ -46,17 +46,33 @@ def make_chains(text_string, input_n):
     return chains
 
 
+def check_punctuation(rand_key_tuple):
+    """Checks for sentence ending punctuation in a tuple of words"""
+
+    end_punctuations = set(['.', '!', '?'])
+
+    tuple_punctuation = rand_key_tuple[-1][-1]
+    if tuple_punctuation == '"':
+        tuple_punctuation = rand_key_tuple[-1][-2]
+
+    if tuple_punctuation in end_punctuations:
+        return False
+    else:
+        return True
+
+
 def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
     text = ""
     text_list = []
 
-    capital_keys = [key for key in chains.keys() if key[0][0].isupper()]
+    capital_keys = [key for key in chains.keys() if (key[0][0].isupper()
+                                                  or key[0][0] == '"')]
     rand_key_tuple = choice(capital_keys)
     text_list.extend(rand_key_tuple)
 
-    while rand_key_tuple in chains:
+    while check_punctuation(rand_key_tuple):
         rand_value = choice(chains[rand_key_tuple])
         text_list.append(rand_value)
 
