@@ -73,8 +73,9 @@ def make_text(chains):
     text_list.extend(rand_key_tuple)
 
     # while rand_key_tuple in chains:           # stop at end of file (hopefully)
-    while check_punctuation(rand_key_tuple):    # stop at punctuation
-    # while len(text_list) < 100:               # stop at number of words
+    # while check_punctuation(rand_key_tuple):  # stop at punctuation
+    while len(text_list) < 70:               # stop at number of words
+
         rand_value = choice(chains[rand_key_tuple])
         text_list.append(rand_value)
 
@@ -84,7 +85,25 @@ def make_text(chains):
         rand_key_list.append(rand_value)
         rand_key_tuple = tuple(rand_key_list)
 
-    text = " ".join(text_list)
+        if check_punctuation(rand_key_tuple) is False:
+            if text:                            # If text already has characters
+                text_list = [""] + text_list    # Add extra space to start of text list
+            text_addition = " ".join(text_list)
+
+            if len(text + text_addition) <= 140:
+                text += text_addition
+                text_list = []
+            elif len(text + text_addition) > 140 and text == "":
+                for word in text_list:
+
+                    if len(text + word) <= 140:
+                        text += word + " "
+                    else:
+                        break
+            else:
+                break
+
+    # text = " ".join(text_list)
 
     # return text[:140]     # return tweet length string
     return text
@@ -103,3 +122,4 @@ chains = make_chains(input_text, input_n)
 random_text = make_text(chains)
 
 print random_text
+print len(random_text)
