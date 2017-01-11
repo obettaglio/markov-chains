@@ -52,7 +52,8 @@ def make_text(chains):
     text = ""
     text_list = []
 
-    rand_key_tuple = choice(chains.keys())
+    capital_keys = [key for key in chains.keys() if key[0][0].isupper()]
+    rand_key_tuple = choice(capital_keys)
     text_list.extend(rand_key_tuple)
 
     while rand_key_tuple in chains:
