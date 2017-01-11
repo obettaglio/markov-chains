@@ -39,7 +39,7 @@ def make_chains(text_string, input_n):
             else:
                 chains[n_gram] = [words[i+input_n]]
 
-            # ??? chains.setdefault(bigram, default=[words[i+2]])
+            # ??? chains.setdefault(bigram, [words[i+2]])
         except:
             pass
 
@@ -72,7 +72,9 @@ def make_text(chains):
     rand_key_tuple = choice(capital_keys)
     text_list.extend(rand_key_tuple)
 
-    while check_punctuation(rand_key_tuple):
+    # while rand_key_tuple in chains:           # stop at end of file (hopefully)
+    while check_punctuation(rand_key_tuple):    # stop at punctuation
+    # while len(text_list) < 100:               # stop at number of words
         rand_value = choice(chains[rand_key_tuple])
         text_list.append(rand_value)
 
@@ -84,6 +86,7 @@ def make_text(chains):
 
     text = " ".join(text_list)
 
+    # return text[:140]     # return tweet length string
     return text
 
 
